@@ -4,65 +4,26 @@ public class PlayerMovement : MonoBehaviour
 {
 
     [Header("Settings")]
-    private PlayerSettings settings;
-
-    [Header("Movement")]
-    [SerializeField] private float moveSpeed = 8f;
-    [SerializeField] private float acceleration = 50f;
-    [SerializeField] private float deceleration = 60f;
-    [SerializeField] private float airControl = 0.8f;
-
-    [Header("Jump")]
-    [SerializeField] private float jumpForce = 14f;
-    [SerializeField] private float jumpHorizontalForce = 4f;
-    [SerializeField] private float coyoteTime = 0.12f;
-    [SerializeField] private float jumpBufferTime = 0.12f;
-    [SerializeField] private float jumpCutMultiplier = 0.5f;
-    [Tooltip("Ускорение падения")]
-    [SerializeField] private float fallMultiplier = 2.5f;
-    [Tooltip("Ускорение падения при коротком прыжке")]
-    [SerializeField] private float lowJumpMultiplier = 2f;
-    [Tooltip("Дополнительная длительность для удержания прыжка (чтобы он был чуть выше)")]
-    [SerializeField] private float maxJumpHoldTime = 0.15f;
-
-    [Header("Wall Jump")]
-    [SerializeField] private float wallJumpForce = 14f;
-    [SerializeField] private float wallJumpHorizontalForce = 10f;
-    [SerializeField] private float wallCoyoteTime = 0.15f;
-    [SerializeField] private Transform wallCheckPoint;
-    [SerializeField] private float wallCheckDistance = 0.2f;
-    [SerializeField] private LayerMask wallLayer;
-
-    [Header("Dodge")]
-    [SerializeField] private float dodgeForce = 20f;
-    [SerializeField] private float dodgeDuration = 0.25f;
-    [SerializeField] private float dodgeCooldown = 1f;
-
-    [Header("Damaged")]
-    [SerializeField] private float damageDuration = 1f;
-    [SerializeField] private float damagedKnockForce = 10f;
-
-    [Header("Ground Check")]
-    [SerializeField] private Transform groundCheckPoint;
-    [SerializeField] private float groundCheckRadius = 0.12f;
-    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private PlayerSettings settings;
 
     [Header("Components")]
     [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private Transform groundCheckPoint;
+    [SerializeField] private Transform wallCheckPoint;
     private PlayerInput input;
     private PlayerAnimation anim;
 
     [Header("Flags")]
-    [SerializeField] private bool isGrounded = false;
-    [SerializeField] private bool isJumping = false;
-    [SerializeField] private bool isFacingRight = true;
-    [SerializeField] private bool isOnAir = false;
-    [SerializeField] private bool isDodged = false;
-    [SerializeField] private bool canDodge = true;
-    [SerializeField] private bool isAttacking = false;
-    [SerializeField] private bool isTouchingWall = false;
-    [SerializeField] private bool isDamaged = false;
-    [SerializeField] private bool isDied = false;
+    private bool isGrounded = false;
+    private bool isJumping = false;
+    private bool isFacingRight = true;
+    private bool isOnAir = false;
+    private bool isDodged = false;
+    private bool canDodge = true;
+    private bool isAttacking = false;
+    private bool isTouchingWall = false;
+    private bool isDamaged = false;
+    private bool isDied = false;
 
     [Header("Stats")]
     private int wallDir;
@@ -130,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded && isJumping)
         {
-            coyoteTimer = coyoteTime;
+            coyoteTimer = settings.coyoteTime;
             isJumping = false;
         }
         else
@@ -143,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (isTouchingWall)
         {
-            wallCoyoteTimer = wallCoyoteTime;
+            wallCoyoteTimer = settings.wallCoyoteTime;
         }
         else
         {
@@ -160,7 +121,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (input.JumpPressed && !isJumping)
         {
-            jumpBufferTimer = jumpBufferTime;
+            jumpBufferTimer = settings.jumpBufferTime;
         }
 
         if (CanJumpGround())
@@ -190,13 +151,13 @@ public class PlayerMovement : MonoBehaviour
         coyoteTimer = 0f;
 
         isJumping = true;
-        jumpHoldTimer = maxJumpHoldTime;
+        jumpHoldTimer = settings.maxJumpHoldTime;
 
         Vector2 lv = rb.linearVelocity;
         lv.y = 0f;
         rb.linearVelocity = lv;
 
-        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        rb.AddForce(Vector2.up * settings.jumpForce, ForceMode2D.Impulse);
     }
 
     private void PerformWallJump()
@@ -205,13 +166,13 @@ public class PlayerMovement : MonoBehaviour
         wallCoyoteTimer = 0f;
 
         isJumping = true;
-        jumpHoldTimer = maxJumpHoldTime;
+        jumpHoldTimer = settings.maxJumpHoldTime;
 
         Vector2 lv = rb.linearVelocity;
         lv.y = 0f;
         rb.linearVelocity = lv;
 
-        Vector2 force = new Vector2(-wallDir * wallJumpHorizontalForce, wallJumpForce);
+        Vector2 force = new Vector2(-wallDir * settings.wallJumpHorizontalForce, settings.wallJumpForce);
         rb.AddForce(force, ForceMode2D.Impulse);
 
         if ((wallDir == -1 && isFacingRight) || (wallDir == 1 && !isFacingRight))
@@ -223,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
         Vector2 lv = rb.linearVelocity;
         if (lv.y > 0f)
         {
-            lv.y *= jumpCutMultiplier;
+            lv.y *= settings.jumpCutMultiplier;
             rb.linearVelocity = lv;
         }
     }
@@ -237,10 +198,10 @@ public class PlayerMovement : MonoBehaviour
             || isDamaged || isDied) return;
 
         float horiz = input.HorizontalInput;
-        targetVelX = horiz * moveSpeed;
+        targetVelX = horiz * settings.moveSpeed;
 
-        float accel = isGrounded ? acceleration : acceleration * airControl;
-        float decel = isGrounded ? deceleration : deceleration * airControl;
+        float accel = isGrounded ? settings.acceleration : settings.acceleration * settings.airControl;
+        float decel = isGrounded ? settings.deceleration : settings.deceleration * settings.airControl;
 
         float newVelX;
         if (Mathf.Abs(targetVelX) > 0.01f)
@@ -260,12 +221,12 @@ public class PlayerMovement : MonoBehaviour
         if (lv.y < 0f)
         {
             // быстрее падать
-            lv.y += Physics2D.gravity.y * (fallMultiplier - 1f) * Time.fixedDeltaTime;
+            lv.y += Physics2D.gravity.y * (settings.fallMultiplier - 1f) * Time.fixedDeltaTime;
         }
         else if (lv.y > 0f && (!input.JumpHeld || jumpHoldTimer <= 0f))
         {
             // короткий прыжок
-            lv.y += Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.fixedDeltaTime;
+            lv.y += Physics2D.gravity.y * (settings.lowJumpMultiplier - 1f) * Time.fixedDeltaTime;
         }
 
         rb.linearVelocity = lv;
@@ -280,8 +241,8 @@ public class PlayerMovement : MonoBehaviour
 
         isDodged = true;
         canDodge = false;
-        dodgeTimer = dodgeDuration;
-        dodgeCooldownTimer = dodgeCooldown;
+        dodgeTimer = settings.dodgeDuration;
+        dodgeCooldownTimer = settings.dodgeCooldown;
         float dodgeDir = isFacingRight ? 1f : -1f;
 
         // сброс горизонтальной скорости
@@ -290,7 +251,7 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = lv;
 
         // импульс доджа
-        rb.AddForce(new Vector2(dodgeDir * dodgeForce, 0f), ForceMode2D.Impulse);
+        rb.AddForce(new Vector2(dodgeDir * settings.dodgeForce, 0f), ForceMode2D.Impulse);
         StartDodgeAnim();
     }
 
@@ -318,13 +279,13 @@ public class PlayerMovement : MonoBehaviour
     #region Wall / Ground / Flip
     private void CheckGround()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
+        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, settings.groundCheckRadius, settings.groundLayer);
     }
 
     private void CheckWall()
     {
-        RaycastHit2D hitLeft = Physics2D.Raycast(wallCheckPoint.position, Vector2.left, wallCheckDistance, wallLayer);
-        RaycastHit2D hitRight = Physics2D.Raycast(wallCheckPoint.position, Vector2.right, wallCheckDistance, wallLayer);
+        RaycastHit2D hitLeft = Physics2D.Raycast(wallCheckPoint.position, Vector2.left, settings.wallCheckDistance, settings.wallLayer);
+        RaycastHit2D hitRight = Physics2D.Raycast(wallCheckPoint.position, Vector2.right, settings.wallCheckDistance, settings.wallLayer);
 
         if (hitLeft)
         {
@@ -394,7 +355,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isDied) return;
 
-        damageTimer = damageDuration;
+        damageTimer = settings.damageDuration;
         isDamaged = true;
 
         //определеяем направления откидывания
@@ -406,7 +367,7 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = lv;
 
         // импульс доджа
-        rb.AddForce(new Vector2(knockDir * damagedKnockForce, 0f), ForceMode2D.Impulse);
+        rb.AddForce(new Vector2(knockDir * settings.damagedKnockForce, 0f), ForceMode2D.Impulse);
         StartDamageKnockAnim(damageSourcePosition);
     }
 
@@ -431,7 +392,7 @@ public class PlayerMovement : MonoBehaviour
         float isFacingDir = isFacingRight ? 1f : -1f;
 
         //настраиваем длительность
-        float damagedMulti = anim.GetDamagedDuration(isFacingDir != knockDir) / dodgeDuration;
+        float damagedMulti = anim.GetDamagedDuration(isFacingDir != knockDir) / settings.dodgeDuration;
         anim.SetDamageMulti(damagedMulti);
 
         //запускаем
@@ -469,7 +430,7 @@ public class PlayerMovement : MonoBehaviour
         if (!isJumping && isGrounded && input.HorizontalInput != 0f)
         {
             //если нынешняя скорость больше чем половина от заданной - бежим
-            bool isWalking = Mathf.Abs(rb.linearVelocity.x) <= moveSpeed / 3f;
+            bool isWalking = Mathf.Abs(rb.linearVelocity.x) <= settings.moveSpeed / 3f;
             anim.SetRunState(!isWalking);
             anim.SetWalkState(isWalking);
         }
@@ -516,7 +477,7 @@ public class PlayerMovement : MonoBehaviour
     //включаем и настраиваем анимацию доджа
     private void StartDodgeAnim()
     {
-        float dodgeMulti =  anim.GetDodgeDuration() / dodgeDuration;
+        float dodgeMulti =  anim.GetDodgeDuration() / settings.dodgeDuration;
         anim.SetDodgeMulti(dodgeMulti);
         anim.SetDodgeStart();
     }
@@ -533,14 +494,14 @@ public class PlayerMovement : MonoBehaviour
         if (groundCheckPoint != null)
         {
             Gizmos.color = isGrounded ? Color.green : Color.red;
-            Gizmos.DrawWireSphere(groundCheckPoint.position, groundCheckRadius);
+            Gizmos.DrawWireSphere(groundCheckPoint.position, settings.groundCheckRadius);
         }
 
         if (wallCheckPoint != null)
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(wallCheckPoint.position, wallCheckPoint.position + Vector3.left * wallCheckDistance);
-            Gizmos.DrawLine(wallCheckPoint.position, wallCheckPoint.position + Vector3.right * wallCheckDistance);
+            Gizmos.DrawLine(wallCheckPoint.position, wallCheckPoint.position + Vector3.left * settings.wallCheckDistance);
+            Gizmos.DrawLine(wallCheckPoint.position, wallCheckPoint.position + Vector3.right * settings.wallCheckDistance);
         }
     }
 }

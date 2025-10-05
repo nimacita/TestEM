@@ -4,21 +4,16 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
+
+    [Header("Settings")]
+    [SerializeField] private PlayerSettings settings;
+
     [Header("Components")]
     [SerializeField] private Transform attackPoint;
     [SerializeField] private ParticleSystem splashEffect;
     private PlayerInput input;
     private PlayerAnimation anim;
     private PlayerMovement movement;
-
-    [Header("Stats")]
-    [SerializeField] private float attackCoolDown = 1f; // время между атаками
-    [SerializeField] private float attackDuration = 0.4f; // длительность самой атаки
-    [SerializeField] private Vector2 offset = Vector2.zero; // смещение от attackPoint
-    [SerializeField] private float attackRadius = 0.5f; // радиус круга Overlap
-    [SerializeField] private int damage = 10;
-    [SerializeField] private float attackDashForce = 2f; //Сила рывка атаки
-    [SerializeField] private LayerMask enemyMask;
 
     //Stats
     private float lastAttackTime = -999f;
@@ -75,7 +70,7 @@ public class PlayerAttack : MonoBehaviour
 
     private void TryStartAttack()
     {
-        if (Time.time < lastAttackTime + attackCoolDown) return; // кулдаун не прошел
+        if (Time.time < lastAttackTime + settings.attackCoolDown) return; // кулдаун не прошел
         if (isAttacking) return; // уже в процессе атаки
 
         //начинаем атаку: устанавливаем состояние, запускаем анимацию и внутренний таймер
@@ -91,7 +86,7 @@ public class PlayerAttack : MonoBehaviour
 
         //рывок во время атаки
         movement.DisableMovementForAttack();
-        movement.AttackMoveDash(attackDashForce);
+        movement.AttackMoveDash(settings.attackDashForce);
 
         //запускаем анимацию атаки
         StartAttackAnim();
@@ -104,9 +99,9 @@ public class PlayerAttack : MonoBehaviour
         StartSplashEffect();
 
         //позиция проверки с учётом смещения
-        Vector2 center = (attackPoint != null) ? (Vector2)attackPoint.position + offset : (Vector2)transform.position + offset;
+        Vector2 center = (attackPoint != null) ? (Vector2)attackPoint.position + settings.AttackZoneOffset : (Vector2)transform.position + settings.AttackZoneOffset;
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(center, attackRadius, enemyMask);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(center, settings.attackRadius, settings.attackMask);
 
         if (hits != null && hits.Length > 0)
         {
@@ -115,7 +110,7 @@ public class PlayerAttack : MonoBehaviour
                 IDamagable iDamagable = c.GetComponent<IDamagable>();
                 if (iDamagable != null)
                 {
-                    iDamagable.TakeDamage(damage, transform.position);
+                    iDamagable.TakeDamage(settings.damage, transform.position);
                 }
             }
         }
@@ -152,7 +147,7 @@ public class PlayerAttack : MonoBehaviour
 
     private void StartAttackAnim()
     {
-        float attackMulti = anim.GetAttackDuration() / attackDuration;
+        float attackMulti = anim.GetAttackDuration() / settings.attackDuration;
         anim.SetAttackMulti(attackMulti);
         anim.SetAttackTrigger();
     }
@@ -163,8 +158,8 @@ public class PlayerAttack : MonoBehaviour
     {
         if (attackPoint == null) return;
         Gizmos.color = Color.red;
-        Vector3 pos = attackPoint.position + (Vector3)offset;
-        Gizmos.DrawWireSphere(pos, attackRadius);
+        Vector3 pos = attackPoint.position + (Vector3)settings.AttackZoneOffset;
+        Gizmos.DrawWireSphere(pos, settings.attackRadius);
 
         if (isAttacking)
         {

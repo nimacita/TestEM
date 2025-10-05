@@ -16173,6 +16173,7 @@ GameObject:
   - component: {fileID: 1877857032}
   - component: {fileID: 1877857036}
   - component: {fileID: 1877857031}
+  - component: {fileID: 1877857038}
   - component: {fileID: 1877857034}
   - component: {fileID: 1877857035}
   m_Layer: 8
@@ -16224,47 +16225,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b1cada7c2f335142ae257d1e5648f5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 8
-  acceleration: 50
-  deceleration: 60
-  airControl: 0.8
-  jumpForce: 14
-  jumpHorizontalForce: 4
-  coyoteTime: 0.12
-  jumpBufferTime: 0.12
-  jumpCutMultiplier: 0.5
-  fallMultiplier: 2.5
-  lowJumpMultiplier: 2
-  maxJumpHoldTime: 0.15
-  wallJumpForce: 14
-  wallJumpHorizontalForce: 10
-  wallCoyoteTime: 0.15
-  wallCheckPoint: {fileID: 808029580}
-  wallCheckDistance: 0.29
-  wallLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  dodgeForce: 20
-  dodgeDuration: 0.25
-  dodgeCooldown: 1
-  damageDuration: 1
-  damagedKnockForce: 10
-  groundCheckPoint: {fileID: 483440595}
-  groundCheckRadius: 0.12
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
+  settings: {fileID: 11400000, guid: 542cdaf3120ebbf41853bfaa03066a35, type: 2}
   rb: {fileID: 1877857034}
-  isGrounded: 0
-  isJumping: 0
-  isFacingRight: 1
-  isOnAir: 0
-  isDodged: 0
-  canDodge: 1
-  isAttacking: 0
-  isTouchingWall: 0
-  isDamaged: 0
-  isDied: 0
+  groundCheckPoint: {fileID: 483440595}
+  wallCheckPoint: {fileID: 808029580}
 --- !u!50 &1877857034
 Rigidbody2D:
   serializedVersion: 5
@@ -16350,17 +16314,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e5249408ae7a8b41964ffda4e360e3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  settings: {fileID: 11400000, guid: 542cdaf3120ebbf41853bfaa03066a35, type: 2}
   attackPoint: {fileID: 843287536}
   splashEffect: {fileID: 8582127455484790606}
-  attackCoolDown: 1
-  attackDuration: 0.4
-  offset: {x: 0, y: 0}
-  attackRadius: 0.5
-  damage: 10
-  attackDashForce: 2
-  enemyMask:
-    serializedVersion: 2
-    m_Bits: 128
 --- !u!114 &1877857037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16374,8 +16330,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 542cdaf3120ebbf41853bfaa03066a35, type: 2}
-  playerHealth: 50
-  currHealth: 0
   playerLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -16386,6 +16340,21 @@ MonoBehaviour:
   input: {fileID: 1877857031}
   attack: {fileID: 1877857036}
   anim: {fileID: 9121811559696196564}
+  flash: {fileID: 0}
+--- !u!114 &1877857038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877857029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63ba33a450b00b1488ebaf4d39094f75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashDuration: 0.2
+  flashColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1938234041
 GameObject:
   m_ObjectHideFlags: 0

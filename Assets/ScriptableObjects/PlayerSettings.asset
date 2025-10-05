@@ -16,9 +16,9 @@ MonoBehaviour:
   damage: 10
   attackCoolDown: 1.2
   attackDuration: 0.5
-  attackedOffset: {x: 0.05, y: 0.03}
+  AttackZoneOffset: {x: 0.05, y: 0.03}
   attackRadius: 0.5
-  attackDashForce: 2
+  attackDashForce: 6
   attackMask:
     serializedVersion: 2
     m_Bits: 128
@@ -37,15 +37,15 @@ MonoBehaviour:
   wallJumpForce: 14
   wallJumpHorizontalForce: 10
   wallCoyoteTime: 0.15
-  wallCheckDistance: 0.2
+  wallCheckDistance: 0.3
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
-  dodgeForce: 20
-  dodgeDuration: 0.25
+  dodgeForce: 15
+  dodgeDuration: 0.3
   dodgeCooldown: 1
-  damageDuration: 1
-  damagedKnockForce: 10
+  damageDuration: 0.3
+  damagedKnockForce: 6
   groundCheckRadius: 0.12
   groundLayer:
     serializedVersion: 2

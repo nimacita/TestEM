@@ -8,8 +8,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     [SerializeField] private PlayerSettings settings;
 
     [Header("Health Settings")]
-    [SerializeField] private float playerHealth = 50f;
-    [SerializeField] private float currHealth;
+    private float currHealth;
 
     [Header("Layer Settings")]
     [SerializeField] private LayerMask playerLayer;
@@ -20,6 +19,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     [SerializeField] private PlayerInput input;
     [SerializeField] private PlayerAttack attack;
     [SerializeField] private PlayerAnimation anim;
+    [SerializeField] private DamageFlash flash;
 
     [Header("Flags")]
     private bool isDied = false;
@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     //инициализируем игрока
     private void InitPlayer()
     {
-        currHealth = playerHealth;
+        currHealth = settings.playerHealth;
         EventManager.InvokeEvent(eEventType.onMaxPlayerHealthUpdated, currHealth);
 
         movement.InitMovement(input, anim);
@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     public void TakeDamage(float damage, Vector2 damageSourcePosition)
     {
         if (isDied) return;
+
+        flash.Flash();
 
         //запускаем отмену атаки если идет
         attack.OnTakedDamage();
