@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheckPoint;
     [SerializeField] private Transform wallCheckPoint;
+    [SerializeField] private GameObject mainCollider, dodgeCollider;
     private PlayerInput input;
     private PlayerAnimation anim;
 
@@ -24,9 +25,11 @@ public class PlayerMovement : MonoBehaviour
     private bool isTouchingWall = false;
     private bool isDamaged = false;
     private bool isDied = false;
+    private bool isCanWallJump = false;
 
     [Header("Stats")]
     private int wallDir;
+    private int lastWallJumpDir = 0;
     private float coyoteTimer = 0f;
     private float jumpBufferTimer = 0f;
     private float jumpHoldTimer = 0f;
@@ -75,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
         HandleDamagedTimers();
         ReadInputForJumpBuffer();
         HandleFlip();
+        SelectColliders();
     }
 
     private void FixedUpdate()
@@ -89,14 +93,18 @@ public class PlayerMovement : MonoBehaviour
     #region Timers
     private void HandleTimers()
     {
-        if (isGrounded && isJumping)
+        if ((isGrounded || isTouchingWall) && isJumping)
         {
             coyoteTimer = settings.coyoteTime;
             isJumping = false;
         }
-        else
+        else if (coyoteTimer > 0f)
         {
             coyoteTimer -= Time.deltaTime;
+        }
+        else
+        {
+            coyoteTimer = 0f;
         }
 
         if (jumpBufferTimer > 0f) jumpBufferTimer -= Time.deltaTime;
@@ -106,9 +114,13 @@ public class PlayerMovement : MonoBehaviour
         {
             wallCoyoteTimer = settings.wallCoyoteTime;
         }
-        else
+        else if(wallCoyoteTimer > 0f)
         {
             wallCoyoteTimer -= Time.deltaTime;
+        }
+        else
+        {
+            wallCoyoteTimer = 0f;
         }
     }
     #endregion
@@ -140,9 +152,15 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanWallJump()
     {
-        return (jumpBufferTimer > 0f && wallCoyoteTimer > 0f) && 
-            ((wallDir < 0 && input.HorizontalInput > 0) ||
-            (wallDir > 0 && input.HorizontalInput < 0));
+        if (!isTouchingWall || isGrounded) return false;
+
+        bool oppositeInput =
+        (wallDir < 0 && input.HorizontalInput > 0) ||
+        (wallDir > 0 && input.HorizontalInput < 0);
+
+        isCanWallJump = (jumpBufferTimer > 0f && wallCoyoteTimer > 0f && oppositeInput && wallDir != lastWallJumpDir);
+        //Debug.Log($"Пытаемся прыгнуть (jumpBufferTimer {jumpBufferTimer}) (wallCoyoteTimer {wallCoyoteTimer}) (oppositeInput {oppositeInput}) (wallDir {wallDir}) (lastWallJumpDir {lastWallJumpDir})");
+        return isCanWallJump;
     }
 
     private void PerformGroundJump()
@@ -174,6 +192,8 @@ public class PlayerMovement : MonoBehaviour
 
         Vector2 force = new Vector2(-wallDir * settings.wallJumpHorizontalForce, settings.wallJumpForce);
         rb.AddForce(force, ForceMode2D.Impulse);
+
+        lastWallJumpDir = wallDir; 
 
         if ((wallDir == -1 && isFacingRight) || (wallDir == 1 && !isFacingRight))
             Flip();
@@ -274,12 +294,22 @@ public class PlayerMovement : MonoBehaviour
                 canDodge = true;
         }
     }
+
+    private void SelectColliders()
+    {
+        mainCollider.SetActive(!isDodged);
+        dodgeCollider.SetActive(isDodged);
+    }
+
     #endregion
 
     #region Wall / Ground / Flip
     private void CheckGround()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, settings.groundCheckRadius, settings.groundLayer);
+
+        if (isGrounded && lastWallJumpDir != 0) 
+            lastWallJumpDir = 0;
     }
 
     private void CheckWall()

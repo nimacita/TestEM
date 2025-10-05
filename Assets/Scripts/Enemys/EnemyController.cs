@@ -2,9 +2,13 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.Windows;
 
+public enum MovementMode { Patrol, Idle }
+
 public class EnemyController : MonoBehaviour, IDamagable
 {
-    public enum MovementMode { Patrol, Idle }
+
+    [Header("Settings")]
+    [SerializeField] protected EnemySettings settings;
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 2f;
@@ -43,25 +47,26 @@ public class EnemyController : MonoBehaviour, IDamagable
     [SerializeField] protected BoxCollider2D boxCollider;
     [SerializeField] protected EnemyAnimation anim;
     [SerializeField] protected ParticleSystem splashAttackEffect;
+    [SerializeField] protected DamageFlash flash;
 
     [Header("Flags")]
-    [SerializeField] private bool isAlive = false;
-    [SerializeField] private bool isMoving = false;
-    [SerializeField] private bool isAttacking = false;
-    [SerializeField] private bool isDamaging = false;
-    [SerializeField] private bool isFacingRight = true;
-    [SerializeField] private bool isChasing = false;
-    [SerializeField] private bool isReturning = false;
+    protected bool isAlive = false;
+    protected bool isMoving = false;
+    protected bool isAttacking = false;
+    protected bool isDamaging = false;
+    protected bool isFacingRight = true;
+    protected bool isChasing = false;
+    protected bool isReturning = false;
 
     [Header("Stats")]
-    private int currentPointIndex = 0;
-    private float currentHealth;
-    private float lastAttackTime = -999f;
-    private Vector2 startPosition;
-    private Vector2 returnTarget;
-    private Coroutine damageCoroutine;
-    private Coroutine attackCoroutine;
-    private Transform chasedPlayer = null;
+    protected int currentPointIndex = 0;
+    protected float currentHealth;
+    protected float lastAttackTime = -999f;
+    protected Vector2 startPosition;
+    protected Vector2 returnTarget;
+    protected Coroutine damageCoroutine;
+    protected Coroutine attackCoroutine;
+    protected Transform chasedPlayer = null;
 
     protected virtual void Start()
     {
@@ -388,6 +393,7 @@ public class EnemyController : MonoBehaviour, IDamagable
     {
         if (!isAlive) return;
 
+        flash.Flash();
         StopAttack();
         currentHealth -= damage;
         if (currentHealth <= 0)

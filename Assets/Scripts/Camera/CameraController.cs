@@ -24,7 +24,7 @@ public class CameraController : MonoBehaviour
         cam = GetComponent<Camera>();
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         if (isFollowing && playerTransform != null)
         {

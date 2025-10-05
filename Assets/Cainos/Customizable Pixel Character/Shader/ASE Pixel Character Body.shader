@@ -9,7 +9,7 @@ Shader "Cainos/Customizable Pixel Character/Body"
 		[PerRendererData]_Alpha("Alpha", Float) = 1
 		_MainTex("Main Tex", 2D) = "white" {}
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
-
+		[PerRendererData]_OverlayColor("Overlay Color", Color) = (0,0,0,0)
 	}
 	
 	SubShader
@@ -77,6 +77,7 @@ Shader "Cainos/Customizable Pixel Character/Body"
 			uniform sampler2D _SkinMaskTex;
 			uniform float4 _SkinMaskTex_ST;
 			uniform float _Alpha;
+			uniform float4 _OverlayColor;
 			inline float Dither8x8Bayer( int x, int y )
 			{
 				const float dither[ 64 ] = {
@@ -149,6 +150,7 @@ Shader "Cainos/Customizable Pixel Character/Body"
 				
 				
 				finalColor = lerpResult14;
+				finalColor.rgb = lerp(finalColor.rgb, _OverlayColor.rgb, _OverlayColor.a);
 				return finalColor;
 			}
 			ENDCG

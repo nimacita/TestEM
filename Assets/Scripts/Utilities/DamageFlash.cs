@@ -4,33 +4,22 @@ using UnityEngine;
 
 public class DamageFlash : MonoBehaviour
 {
-    [SerializeField] private float flashDuration = 0.2f;
-    [SerializeField] private Color flashColor = Color.red;
+    [SerializeField] private DamageFlashSettings settings;
+    private string overlayProperty = "_OverlayColor";
 
     private List<SkinnedMeshRenderer> renderers = new List<SkinnedMeshRenderer>();
-    private List<Color[]> originalColors = new List<Color[]>();
+    private MaterialPropertyBlock block;
     private Coroutine flashRoutine;
 
     void Awake()
     {
-        // Находим все рендереры в потомках
         renderers.AddRange(GetComponentsInChildren<SkinnedMeshRenderer>());
-
-        // Сохраняем оригинальные цвета материалов
-        foreach (var renderer in renderers)
-        {
-            var colors = new Color[renderer.materials.Length];
-            for (int i = 0; i < renderer.materials.Length; i++)
-            {
-                colors[i] = renderer.materials[i].color;
-            }
-            originalColors.Add(colors);
-        }
+        block = new MaterialPropertyBlock();
     }
 
     public void Flash()
     {
-        Flash(flashColor, flashDuration);
+        Flash(settings.flashColor, settings.flashDuration);
     }
 
     public void Flash(Color color, float duration)
@@ -43,30 +32,26 @@ public class DamageFlash : MonoBehaviour
 
     private IEnumerator FlashRoutine(Color color, float duration)
     {
-        // Меняем цвет
-        for (int r = 0; r < renderers.Count; r++)
+        float timer = 0f;
+        while (timer < duration)
         {
-            var renderer = renderers[r];
-            foreach (var mat in renderer.materials)
-            {
-                mat.color = color;
-            }
+            timer += Time.deltaTime;
+            float t = 1f - (timer / duration);
+            ApplyOverlay(Color.Lerp(Color.clear, color, t));
+            yield return null;
         }
 
-        yield return new WaitForSeconds(duration);
-
-        // Возвращаем оригинальные цвета
-        for (int r = 0; r < renderers.Count; r++)
-        {
-            var renderer = renderers[r];
-            var colors = originalColors[r];
-
-            for (int i = 0; i < renderer.materials.Length; i++)
-            {
-                renderer.materials[i].color = colors[i];
-            }
-        }
-
+        ApplyOverlay(Color.clear);
         flashRoutine = null;
+    }
+
+    private void ApplyOverlay(Color overlay)
+    {
+        foreach (var r in renderers)
+        {
+            r.GetPropertyBlock(block);
+            block.SetColor(overlayProperty, overlay);
+            r.SetPropertyBlock(block);
+        }
     }
 }

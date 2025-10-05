@@ -26,7 +26,7 @@ MonoBehaviour:
   acceleration: 50
   deceleration: 60
   airControl: 0.8
-  jumpForce: 14
+  jumpForce: 10
   jumpHorizontalForce: 4
   coyoteTime: 0.12
   jumpBufferTime: 0.12
@@ -40,7 +40,7 @@ MonoBehaviour:
   wallCheckDistance: 0.3
   wallLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 8
   dodgeForce: 15
   dodgeDuration: 0.3
   dodgeCooldown: 1
