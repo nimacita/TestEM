@@ -10,37 +10,9 @@ public class EnemyController : MonoBehaviour, IDamagable
     [Header("Settings")]
     [SerializeField] protected EnemySettings settings;
 
-    [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private Vector2[] movePoints; // Локальные смещения от стартовой позиции
-    [SerializeField] private float pointReachThreshold = 0.1f;
-
-    [Header("Behavior")]
-    [SerializeField] private MovementMode movementMode = MovementMode.Patrol;
-    [SerializeField] private bool canChasePlayer = true;
-    [SerializeField] private Vector2 eyeOffset = new Vector2(0f, 1f);
-    [SerializeField] private float frontRayDistance = 4f;
-    [SerializeField] private float backRayDistance = 3f;
-    [SerializeField] private float maxChaseDistance = 6f;
-    [SerializeField] private float chaseSpeedMultiplier = 1.2f;
-    [SerializeField] private float returnSpeedMultiplier = 1f;
-
-    [Header("Attack Settings")]
-    [SerializeField] private float attackDuration = 2f;
-    [SerializeField] private float attackDamage = 10f;
-    [SerializeField] private float playerDetectRange = 1f;
-    [SerializeField] private Vector2 detectRangeOffset = Vector2.zero;
-    [SerializeField] private float attackRange = 1f;
-    [SerializeField] private Vector2 attackRangeOffset = Vector2.zero; // смещение от attackPoint
-    [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private Transform attackPoint;
-
-    [Header("Health Settings")]
-    [SerializeField] private float maxHealth = 100f;
-
-    [Header("Damage Reaction")]
-    [SerializeField] private float knockbackDistance = 2f; // расстояние отскока по X
-    [SerializeField] private float takeDamageDuration = 0.15f; // Время стана при получении урона
+    [Header("Move Settings")]
+    [Tooltip("Точки передвижения")]
+    [SerializeField] protected Vector2[] movePoints;
 
     [Header("Components")]
     [SerializeField] protected Rigidbody2D rb;
@@ -48,13 +20,14 @@ public class EnemyController : MonoBehaviour, IDamagable
     [SerializeField] protected EnemyAnimation anim;
     [SerializeField] protected ParticleSystem splashAttackEffect;
     [SerializeField] protected DamageFlash flash;
+    [SerializeField] private Transform attackPoint;
 
     [Header("Flags")]
+    [SerializeField] protected bool isFacingRight = true;
     protected bool isAlive = false;
     protected bool isMoving = false;
     protected bool isAttacking = false;
     protected bool isDamaging = false;
-    protected bool isFacingRight = true;
     protected bool isChasing = false;
     protected bool isReturning = false;
 
@@ -76,19 +49,19 @@ public class EnemyController : MonoBehaviour, IDamagable
     protected virtual void Init()
     {
         startPosition = transform.position;
-        currentHealth = maxHealth;
+        currentHealth = settings.maxHealth;
 
         if (boxCollider) boxCollider.isTrigger = false;
 
-        SetAnimSettings();
+        //SetAnimSettings();
 
         isAlive = true;
     }
 
     protected virtual void SetAnimSettings()
     {
-        if (anim != null)
-            attackDuration = anim.GetAttackDuration();
+        //if (anim != null)
+            //settings.attackDuration = anim.GetAttackDuration();
     }
 
     #region Subscribes
@@ -103,13 +76,9 @@ public class EnemyController : MonoBehaviour, IDamagable
     }
     #endregion
 
-    protected virtual void Update()
-    {
-        TryAttack();
-    }
-
     protected void FixedUpdate()
     {
+        TryAttack();
         HandleMovementState();
         AnimationControlls();
     }
@@ -125,7 +94,7 @@ public class EnemyController : MonoBehaviour, IDamagable
             return;
         }
 
-        if (canChasePlayer)
+        if (settings.canChasePlayer)
             CheckChase();
 
         if (isChasing && chasedPlayer != null)
@@ -136,7 +105,7 @@ public class EnemyController : MonoBehaviour, IDamagable
         {
             HandleReturn();
         }
-        else if (movementMode == MovementMode.Patrol)
+        else if (settings.movementMode == MovementMode.Patrol)
         {
             HandlePatrol();
         }
@@ -159,34 +128,34 @@ public class EnemyController : MonoBehaviour, IDamagable
             chasedPlayer = null;
             isChasing = false;
             isReturning = true;
-            returnTarget = movementMode == MovementMode.Idle
+            returnTarget = settings.movementMode == MovementMode.Idle
                 ? startPosition
                 : startPosition + movePoints[FindClosestPointIndex(rb.position)];
             return;
         }
 
         isMoving = true;
-        MoveTowards(chasedPlayer.position, moveSpeed * chaseSpeedMultiplier);
+        MoveTowards(chasedPlayer.position, settings.moveSpeed * settings.chaseSpeedMultiplier);
     }
 
     //возвращаемся до нужной точки
     protected void HandleReturn()
     {
         if (returnTarget == Vector2.zero)
-            returnTarget = movementMode == MovementMode.Idle
+            returnTarget = settings.movementMode == MovementMode.Idle
                 ? startPosition
                 : startPosition + movePoints[FindClosestPointIndex(rb.position)];
 
-        MoveTowards(returnTarget, moveSpeed * returnSpeedMultiplier);
+        MoveTowards(returnTarget, settings.moveSpeed * settings.returnSpeedMultiplier);
         isMoving = true;
 
-        if (Vector2.Distance(rb.position, returnTarget) <= pointReachThreshold)
+        if (Vector2.Distance(rb.position, returnTarget) <= settings.pointReachThreshold)
         {
             isReturning = false;
             isChasing = false;
             chasedPlayer = null;
 
-            if (movementMode == MovementMode.Patrol)
+            if (settings.movementMode == MovementMode.Patrol)
                 currentPointIndex = FindClosestPointIndex(rb.position);
         }
     }
@@ -202,9 +171,9 @@ public class EnemyController : MonoBehaviour, IDamagable
 
         isMoving = true;
         Vector2 targetPoint = startPosition + movePoints[currentPointIndex];
-        MoveTowards(targetPoint, moveSpeed);
+        MoveTowards(targetPoint, settings.moveSpeed);
 
-        if (Vector2.Distance(rb.position, targetPoint) <= pointReachThreshold)
+        if (Vector2.Distance(rb.position, targetPoint) <= settings.pointReachThreshold)
             currentPointIndex = (currentPointIndex + 1) % movePoints.Length;
     }
 
@@ -214,7 +183,7 @@ public class EnemyController : MonoBehaviour, IDamagable
         if (Vector2.Distance(rb.position, startPosition) > 0.01f)
         {
             isMoving = true;
-            MoveTowards(startPosition, moveSpeed);
+            MoveTowards(startPosition, settings.moveSpeed);
         }
         else
         {
@@ -228,7 +197,7 @@ public class EnemyController : MonoBehaviour, IDamagable
     {
         Vector2 newPosition = Vector2.MoveTowards(rb.position, worldTarget, speed * Time.fixedDeltaTime);
         newPosition.y = transform.position.y;
-        FacingToPoint(newPosition);
+        FacingToPoint(worldTarget);
 
         rb.MovePosition(newPosition);
     }
@@ -270,15 +239,15 @@ public class EnemyController : MonoBehaviour, IDamagable
 
     protected void CheckChase()
     {
-        if (!canChasePlayer || isDamaging || isAttacking || !isAlive)
+        if (!settings.canChasePlayer || isDamaging || isAttacking || !isAlive)
             return;
 
-        Vector2 eyePos = (Vector2)transform.position + eyeOffset;
+        Vector2 eyePos = (Vector2)transform.position + settings.eyeOffset;
         float frontDir = isFacingRight ? 1f : -1f;
 
         // Два луча — вперёд и назад
-        RaycastHit2D frontHit = Physics2D.Raycast(eyePos, new Vector2(frontDir, 0f), frontRayDistance, playerLayer);
-        RaycastHit2D backHit = Physics2D.Raycast(eyePos, new Vector2(-frontDir, 0f), backRayDistance, playerLayer);
+        RaycastHit2D frontHit = Physics2D.Raycast(eyePos, new Vector2(frontDir, 0f), settings.frontRayDistance, settings.playerLayer);
+        RaycastHit2D backHit = Physics2D.Raycast(eyePos, new Vector2(-frontDir, 0f), settings.backRayDistance, settings.playerLayer);
 
         // Игрок замечен
         if (frontHit.collider != null || backHit.collider != null)
@@ -292,7 +261,7 @@ public class EnemyController : MonoBehaviour, IDamagable
             // Потеряли игрока — начинаем возвращение
             isChasing = false;
             isReturning = true;
-            returnTarget = movementMode == MovementMode.Idle
+            returnTarget = settings.movementMode == MovementMode.Idle
                 ? startPosition
                 : startPosition + movePoints[FindClosestPointIndex(rb.position)];
         }
@@ -301,16 +270,16 @@ public class EnemyController : MonoBehaviour, IDamagable
     //получаем максимальную дистанцию чейза
     protected float GetMaxChaseDistance()
     {
-        float maxRay = frontRayDistance > backRayDistance ? 
-            frontRayDistance : backRayDistance;
+        float maxRay = settings.frontRayDistance > settings.backRayDistance ?
+            settings.frontRayDistance : settings.backRayDistance;
 
-        if (maxRay == maxChaseDistance)
+        if (maxRay == settings.maxChaseDistance)
         {
-            return maxChaseDistance + 1f;
+            return settings.maxChaseDistance + 1f;
         }
 
-        float newMaxChaseDistance = maxChaseDistance > maxRay ? 
-            maxChaseDistance : maxRay;
+        float newMaxChaseDistance = settings.maxChaseDistance > maxRay ?
+            settings.maxChaseDistance : maxRay;
 
         return newMaxChaseDistance;
     }
@@ -318,7 +287,7 @@ public class EnemyController : MonoBehaviour, IDamagable
     protected bool IsNeededLayer()
     {
         if (chasedPlayer == null) return false;
-        return chasedPlayer.gameObject.layer == (int)Mathf.Log(playerLayer.value, 2);
+        return chasedPlayer.gameObject.layer == (int)Mathf.Log(settings.playerLayer.value, 2);
     }
 
     #endregion
@@ -327,10 +296,19 @@ public class EnemyController : MonoBehaviour, IDamagable
     //можем ли атаковать
     protected virtual void TryAttack()
     {
-        if (Time.time < lastAttackTime + attackDuration || isAttacking || !isAlive) return;
+        if (Time.time < lastAttackTime + settings.attackDuration || isAttacking || !isAlive) return;
 
-        Collider2D playerCollider = Physics2D.OverlapCircle(attackPoint.position + (Vector3)detectRangeOffset,
-            playerDetectRange, playerLayer);
+        Collider2D playerCollider;
+        if (isFacingRight)
+        {
+            playerCollider = Physics2D.OverlapCircle(attackPoint.position + (Vector3)settings.detectAtckRangeOffset, 
+                settings.playerAtckDetectRange, settings.playerLayer);
+        }
+        else
+        {
+            playerCollider = Physics2D.OverlapCircle(attackPoint.position - (Vector3)settings.detectAtckRangeOffset,
+                settings.playerAtckDetectRange, settings.playerLayer);
+        }
 
         if (playerCollider)
         {
@@ -348,7 +326,7 @@ public class EnemyController : MonoBehaviour, IDamagable
         StartAttackAnim();
 
         lastAttackTime = Time.time;
-        yield return new WaitForSeconds(attackDuration);
+        yield return new WaitForSeconds(settings.attackDuration);
 
         isAttacking = false;
     }
@@ -358,14 +336,26 @@ public class EnemyController : MonoBehaviour, IDamagable
     {
         //Еффекст
         if (splashAttackEffect) splashAttackEffect.Play();
+
         // Наносим урон
-        Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position + (Vector3)attackRangeOffset, attackRange, playerLayer);
+        Collider2D[] hits;
+        if (isFacingRight)
+        {
+             hits = Physics2D.OverlapCircleAll(attackPoint.position + (Vector3)settings.attackRangeOffset, 
+                settings.attackRange, settings.playerLayer);
+        }
+        else
+        {
+            hits = Physics2D.OverlapCircleAll(attackPoint.position - (Vector3)settings.attackRangeOffset,
+                settings.attackRange, settings.playerLayer);
+        }
+
         foreach (Collider2D hit in hits)
         {
-            IDamagable damagable = hit.GetComponent<IDamagable>();
+            IDamagable damagable = hit.transform.parent.GetComponent<IDamagable>();
             if (damagable != null)
             {
-                damagable.TakeDamage(attackDamage, transform.position);
+                damagable.TakeDamage(settings.attackDamage, transform.position);
             }
         }
     }
@@ -392,9 +382,7 @@ public class EnemyController : MonoBehaviour, IDamagable
     protected virtual void OnTakedDamage(float damage, Vector2 damageSourcePosition)
     {
         if (!isAlive) return;
-
         flash.Flash();
-        StopAttack();
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
@@ -402,8 +390,12 @@ public class EnemyController : MonoBehaviour, IDamagable
             return;
         }
 
-        if (damageCoroutine != null) StopCoroutine(damageCoroutine);
-        damageCoroutine = StartCoroutine(DamageReaction(damageSourcePosition));
+        if (settings.isDamageKnocked)
+        {
+            StopAttack();
+            if (damageCoroutine != null) StopCoroutine(damageCoroutine);
+            damageCoroutine = StartCoroutine(DamageReaction(damageSourcePosition));
+        }
     }
 
     protected virtual IEnumerator DamageReaction(Vector2 damageSourcePosition)
@@ -412,7 +404,7 @@ public class EnemyController : MonoBehaviour, IDamagable
 
         Vector2 startPos = rb.position;
         float knockDir = damageSourcePosition.x < startPos.x ? 1f : -1f;
-        Vector2 finalPos = startPos + new Vector2(knockDir * knockbackDistance, 0f);
+        Vector2 finalPos = startPos + new Vector2(knockDir * settings.knockbackDistance, 0f);
         float elapsed = 0f;
 
         //запускаю аницию получения урона
@@ -420,10 +412,10 @@ public class EnemyController : MonoBehaviour, IDamagable
         StartTakedDamageAnim(isFacingDir != knockDir);
 
         //отскок врага в случае удара (фиксированный шаг)
-        while (elapsed < takeDamageDuration)
+        while (elapsed < settings.takeDamageDuration)
         {
             elapsed += Time.fixedDeltaTime;
-            float t = Mathf.Clamp01(elapsed / takeDamageDuration);
+            float t = Mathf.Clamp01(elapsed / settings.takeDamageDuration);
 
             //для плавности
             float smoothT = Mathf.Sin(t * Mathf.PI * 0.5f);
@@ -443,9 +435,8 @@ public class EnemyController : MonoBehaviour, IDamagable
     {
         if (!isAlive) return;
         if (boxCollider) boxCollider.isTrigger = true;
-        StartDieAnim();
-
         isAlive = false;
+        StartDieAnim();
     }
 
     #endregion
@@ -464,8 +455,17 @@ public class EnemyController : MonoBehaviour, IDamagable
 
         if (isMoving)
         {
-            anim.SetRunState(isChasing);
-            anim.SetWalkState(!isChasing);
+            if (settings.isRunningToPlayerAnim)
+            {
+                anim.SetRunState(isChasing);
+                anim.SetWalkState(!isChasing);
+            }
+            else
+            {
+                anim.SetRunState(false);
+                anim.SetWalkState(true);
+            }
+
         }
         else
         {
@@ -477,13 +477,15 @@ public class EnemyController : MonoBehaviour, IDamagable
     //включаем и настраиваем анимацию получения урона
     protected virtual void StartTakedDamageAnim(bool isfront)
     {
-        float damagedMulti = anim != null ? anim.GetDamagedDuration(isfront) / takeDamageDuration : 1f;
-        if (anim != null) anim.SetTakeDamageMulti(damagedMulti);
-        if (anim != null) anim.SetTakeDamageTrigger(isfront);
+        float damagedMulti = anim.GetDamagedDuration(isfront) / settings.takeDamageDuration;
+        anim?.SetTakeDamageMulti(damagedMulti);
+        anim?.SetTakeDamageTrigger(isfront);
     }
 
     protected virtual void StartAttackAnim()
     {
+        float attackMulti = anim.GetAttackDuration() / settings.attackDuration;
+        anim?.SetAttackMulti(attackMulti);
         anim?.SetAttackTrigger();
     }
 
@@ -500,12 +502,15 @@ public class EnemyController : MonoBehaviour, IDamagable
         if (attackPoint)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(attackPoint.position + (Vector3)attackRangeOffset, attackRange);
+            if(isFacingRight) Gizmos.DrawWireSphere(attackPoint.position + (Vector3)settings.attackRangeOffset, settings.attackRange);
+            else Gizmos.DrawWireSphere(attackPoint.position - (Vector3)settings.attackRangeOffset, settings.attackRange);
+
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(attackPoint.position + (Vector3)detectRangeOffset, playerDetectRange);
+            if(isFacingRight) Gizmos.DrawWireSphere(attackPoint.position + (Vector3)settings.detectAtckRangeOffset, settings.playerAtckDetectRange);
+            else Gizmos.DrawWireSphere(attackPoint.position - (Vector3)settings.detectAtckRangeOffset, settings.playerAtckDetectRange);
         }
 
-        if (movePoints.Length != 0 && movementMode == MovementMode.Patrol)
+        if (movePoints.Length != 0 && settings.movementMode == MovementMode.Patrol)
         {
             Gizmos.color = Color.cyan;
             Vector2 basePos = Application.isPlaying ? (Vector2)startPosition : (Vector2)transform.position;
@@ -522,12 +527,12 @@ public class EnemyController : MonoBehaviour, IDamagable
         }
         else
         {
-            Vector2 eyePos = Application.isPlaying ? (Vector2)transform.position + eyeOffset : (Vector2)transform.position + eyeOffset;
+            Vector2 eyePos = Application.isPlaying ? (Vector2)transform.position + settings.eyeOffset : (Vector2)transform.position + settings.eyeOffset;
             float frontDir = isFacingRight ? 1f : -1f;
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(eyePos, eyePos + new Vector2(frontDir, 0f) * frontRayDistance);
+            Gizmos.DrawLine(eyePos, eyePos + new Vector2(frontDir, 0f) * settings.frontRayDistance);
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(eyePos, eyePos + new Vector2(-frontDir, 0f) * backRayDistance);
+            Gizmos.DrawLine(eyePos, eyePos + new Vector2(-frontDir, 0f) * settings.backRayDistance);
         }
     }
 

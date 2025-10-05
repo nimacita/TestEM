@@ -3,13 +3,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EnemySettings", menuName = "ScriptableObjects/EnemySettings")]
 public class EnemySettings : ScriptableObject
 {
+
+    [Header("Health Settings")]
+    [Tooltip("Стартовое здоровье")]
+    public float maxHealth = 20f;
+
     [Header("Movement Settings")]
     [Tooltip("Базовая скорость движения")]
     public float moveSpeed = 2f;
 
     [Header("Move Type Settings")]
-    [Tooltip("Точки передвижения")]
-    public Vector2[] movePoints; 
     [Tooltip("Расстояния до смены точки")]
     public float pointReachThreshold = 0.1f;
     [Tooltip("Тип Движения")]
@@ -30,6 +33,8 @@ public class EnemySettings : ScriptableObject
     public float chaseSpeedMultiplier = 1.5f;
     [Tooltip("Скорость возвращения")]
     public float returnSpeedMultiplier = 1f;
+    [Tooltip("Есть ли анимация бега за персонажем")]
+    public bool isRunningToPlayerAnim = true;
 
     [Header("Attack Settings")]
     [Tooltip("Урон")]
@@ -47,11 +52,10 @@ public class EnemySettings : ScriptableObject
     [Tooltip("Слой игрока")]
     public LayerMask playerLayer;
 
-    [Header("Health Settings")]
-    [Tooltip("Стартовое здоровье")]
-    public float maxHealth = 20f;
-
     [Header("Damage Reaction Settings")]
+    [Tooltip("Откидывается ли враг " +
+        "(прерывается при получении урона)")]
+    public bool isDamageKnocked = true;
     [Tooltip("Расстояние отскока")]
     public float knockbackDistance = 2f; 
     [Tooltip("Длительность отскока")]

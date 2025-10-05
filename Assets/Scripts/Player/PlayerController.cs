@@ -69,6 +69,11 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void ChangeLayer(LayerMask currLayer)
     {
-        gameObject.layer = (int)Mathf.Log(currLayer.value, 2);
+        int newLayerInd = (int)Mathf.Log(currLayer.value, 2);
+        gameObject.layer = newLayerInd;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            transform.GetChild(i).gameObject.layer = newLayerInd;
+        }
     }
 }

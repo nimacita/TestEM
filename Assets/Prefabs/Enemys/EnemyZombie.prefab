@@ -5139,37 +5139,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50cba03ce85695a44b0147a3d656a346, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2
+  settings: {fileID: 11400000, guid: 08dc95150cd74474f8e07517e08a55bb, type: 2}
   movePoints:
-  - {x: 3, y: 0}
-  - {x: -2, y: 0}
-  pointReachThreshold: 0.1
-  movementMode: 0
-  canChasePlayer: 1
-  eyeOffset: {x: 0, y: 1.55}
-  frontRayDistance: 6
-  backRayDistance: 3
-  maxChaseDistance: 7
-  chaseSpeedMultiplier: 1.5
-  returnSpeedMultiplier: 1
-  attackDuration: 1.2
-  attackDamage: 10
-  playerDetectRange: 0.55
-  detectRangeOffset: {x: 0.12, y: 0}
-  attackRange: 0.57
-  attackRangeOffset: {x: 0.13, y: 0}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  attackPoint: {fileID: 8049220149234669848}
-  maxHealth: 20
-  knockbackDistance: 2
-  takeDamageDuration: 0.5
+  - {x: 0, y: 0}
+  - {x: 0, y: 0}
   rb: {fileID: 4536486677761639949}
   boxCollider: {fileID: 4816293584513185961}
   anim: {fileID: 1417976463205111491}
   splashAttackEffect: {fileID: 2934421794625744113}
   flash: {fileID: 1877242284717272909}
+  attackPoint: {fileID: 8049220149234669848}
 --- !u!114 &1877242284717272909
 MonoBehaviour:
   m_ObjectHideFlags: 0
