@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69d97f6f073aee749830e81a14149a90, type: 3}
+  m_Name: PlayerSettings
+  m_EditorClassIdentifier: 
+  playerHealth: 50
+  damage: 10
+  attackCoolDown: 1.2
+  attackDuration: 0.5
+  attackedOffset: {x: 0.05, y: 0.03}
+  attackRadius: 0.5
+  attackDashForce: 2
+  attackMask:
+    serializedVersion: 2
+    m_Bits: 128
+  moveSpeed: 8
+  acceleration: 50
+  deceleration: 60
+  airControl: 0.8
+  jumpForce: 14
+  jumpHorizontalForce: 4
+  coyoteTime: 0.12
+  jumpBufferTime: 0.12
+  jumpCutMultiplier: 0.5
+  fallMultiplier: 2.5
+  lowJumpMultiplier: 2
+  maxJumpHoldTime: 0.15
+  wallJumpForce: 14
+  wallJumpHorizontalForce: 10
+  wallCoyoteTime: 0.15
+  wallCheckDistance: 0.2
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  dodgeForce: 20
+  dodgeDuration: 0.25
+  dodgeCooldown: 1
+  damageDuration: 1
+  damagedKnockForce: 10
+  groundCheckRadius: 0.12
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  diedLayer:
+    serializedVersion: 2
+    m_Bits: 512
