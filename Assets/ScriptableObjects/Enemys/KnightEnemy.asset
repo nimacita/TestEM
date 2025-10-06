@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 740118ce51cdb1142923df6d53be36ee, type: 3}
   m_Name: KnightEnemy
   m_EditorClassIdentifier: 
+  enemyName: "\u0420\u044B\u0446\u0430\u0440\u044C"
   maxHealth: 50
   moveSpeed: 1.5
   pointReachThreshold: 0.1
   movementMode: 1
   canChasePlayer: 1
-  eyeOffset: {x: 0, y: 1.12}
+  eyeOffset: {x: 0, y: 1.25}
   frontRayDistance: 6
   backRayDistance: 3
   maxChaseDistance: 10
@@ -36,3 +37,7 @@ MonoBehaviour:
   isDamageKnocked: 0
   knockbackDistance: 2
   takeDamageDuration: 0.5
+  wallCheckRayDistance: 1
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 8

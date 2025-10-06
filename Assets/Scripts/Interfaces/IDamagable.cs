@@ -2,6 +2,6 @@ using UnityEngine;
 
 public interface IDamagable
 {
-    public void TakeDamage(float damage, Vector2 damageSourcePosition);
+    public void TakeDamage(float damage, Vector2 damageSourcePosition, string damagerName);
 }
 

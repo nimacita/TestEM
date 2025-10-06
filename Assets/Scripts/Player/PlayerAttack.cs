@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
@@ -19,6 +17,7 @@ public class PlayerAttack : MonoBehaviour
     private float lastAttackTime = -999f;
     private bool isAttacking = false;
     private bool isDied = false;
+    private bool isInited = false;
 
     private void OnDisable()
     {
@@ -34,6 +33,7 @@ public class PlayerAttack : MonoBehaviour
         movement = playerMovement;
 
         Subscribes();
+        isInited = true;
     }
 
     #region Subscribes
@@ -54,6 +54,7 @@ public class PlayerAttack : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!isInited) return;
         AttackHandle();
     }
 
@@ -110,7 +111,7 @@ public class PlayerAttack : MonoBehaviour
                 IDamagable iDamagable = c.GetComponent<IDamagable>();
                 if (iDamagable != null)
                 {
-                    iDamagable.TakeDamage(settings.damage, transform.position);
+                    iDamagable.TakeDamage(settings.damage, transform.position, "Player");
                 }
             }
         }
@@ -141,6 +142,12 @@ public class PlayerAttack : MonoBehaviour
     {
         if (isDied) return;
         isDied = true;
+    }
+
+    public void OnGameEnded()
+    {
+        if (!isInited) return;
+        isInited = false;
     }
 
     #region Animation Settings

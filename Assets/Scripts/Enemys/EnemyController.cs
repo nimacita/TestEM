@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.Windows;
+using Utilities.EventManager;
 
 public enum MovementMode { Patrol, Idle }
 
-public class EnemyController : MonoBehaviour, IDamagable
+public class EnemyController : MonoBehaviour, IDamagable, IInitializable
 {
 
     [Header("Settings")]
@@ -41,7 +41,7 @@ public class EnemyController : MonoBehaviour, IDamagable
     protected Coroutine attackCoroutine;
     protected Transform chasedPlayer = null;
 
-    protected virtual void Start()
+    public void Initialized()
     {
         Init();
     }
@@ -53,26 +53,20 @@ public class EnemyController : MonoBehaviour, IDamagable
 
         if (boxCollider) boxCollider.isTrigger = false;
 
-        //SetAnimSettings();
-
         isAlive = true;
-    }
-
-    protected virtual void SetAnimSettings()
-    {
-        //if (anim != null)
-            //settings.attackDuration = anim.GetAttackDuration();
     }
 
     #region Subscribes
     protected void OnEnable()
     {
         if (anim != null) anim.onAttacked += AttackedTrigger;
+        EventManager.Subscribe(eEventType.onGameEnded, OnGameEnded);
     }
 
     protected void OnDisable()
     {
         if (anim != null) anim.onAttacked -= AttackedTrigger;
+        EventManager.Unsubscribe(eEventType.onGameEnded, OnGameEnded);
     }
     #endregion
 
@@ -123,7 +117,7 @@ public class EnemyController : MonoBehaviour, IDamagable
         float distX = Mathf.Abs(chasedPlayer.position.x - transform.position.x);
 
         //проверяем на дистанцию или на нужный слой
-        if (distX > GetMaxChaseDistance() || !IsNeededLayer())
+        if (distX > GetMaxChaseDistance() || !IsNeededLayer() || IsWallInFront() || !IsGround())
         {
             chasedPlayer = null;
             isChasing = false;
@@ -239,7 +233,8 @@ public class EnemyController : MonoBehaviour, IDamagable
 
     protected void CheckChase()
     {
-        if (!settings.canChasePlayer || isDamaging || isAttacking || !isAlive)
+        if (!settings.canChasePlayer || isDamaging || isAttacking || !isAlive 
+            || IsWallInFront() || !IsGround())
             return;
 
         Vector2 eyePos = (Vector2)transform.position + settings.eyeOffset;
@@ -265,6 +260,27 @@ public class EnemyController : MonoBehaviour, IDamagable
                 ? startPosition
                 : startPosition + movePoints[FindClosestPointIndex(rb.position)];
         }
+    }
+
+    //Если стена спереди
+    protected bool IsWallInFront()
+    {
+        Vector2 eyePos = (Vector2)transform.position + settings.eyeOffset;
+        float frontDir = isFacingRight ? 1f : -1f;
+        RaycastHit2D frontHit = Physics2D.Raycast(eyePos, new Vector2(frontDir, 0f), settings.wallCheckRayDistance, settings.wallLayer);
+        if (frontHit.collider != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    protected bool IsGround()
+    {
+        return Physics2D.OverlapCircle(transform.position, settings.groundCheckRadius, settings.groundLayer);
     }
 
     //получаем максимальную дистанцию чейза
@@ -355,7 +371,7 @@ public class EnemyController : MonoBehaviour, IDamagable
             IDamagable damagable = hit.transform.parent.GetComponent<IDamagable>();
             if (damagable != null)
             {
-                damagable.TakeDamage(settings.attackDamage, transform.position);
+                damagable.TakeDamage(settings.attackDamage, transform.position, settings.enemyName);
             }
         }
     }
@@ -374,7 +390,7 @@ public class EnemyController : MonoBehaviour, IDamagable
 
     #region Damage/Health
 
-    public void TakeDamage(float damage, Vector2 damageSourcePosition)
+    public void TakeDamage(float damage, Vector2 damageSourcePosition, string damagerName)
     {
         OnTakedDamage(damage, damageSourcePosition);
     }
@@ -386,6 +402,7 @@ public class EnemyController : MonoBehaviour, IDamagable
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
+            StopAttack();
             Die();
             return;
         }
@@ -439,6 +456,12 @@ public class EnemyController : MonoBehaviour, IDamagable
         StartDieAnim();
     }
 
+    protected void OnGameEnded(object arg0)
+    {
+        if (!isAlive) return;
+        isAlive = false;
+    }
+
     #endregion
 
     #region Animation Settings
@@ -477,6 +500,7 @@ public class EnemyController : MonoBehaviour, IDamagable
     //включаем и настраиваем анимацию получения урона
     protected virtual void StartTakedDamageAnim(bool isfront)
     {
+        if (!isAlive) return;
         float damagedMulti = anim.GetDamagedDuration(isfront) / settings.takeDamageDuration;
         anim?.SetTakeDamageMulti(damagedMulti);
         anim?.SetTakeDamageTrigger(isfront);
@@ -484,6 +508,7 @@ public class EnemyController : MonoBehaviour, IDamagable
 
     protected virtual void StartAttackAnim()
     {
+        if (!isAlive) return;
         float attackMulti = anim.GetAttackDuration() / settings.attackDuration;
         anim?.SetAttackMulti(attackMulti);
         anim?.SetAttackTrigger();
@@ -524,6 +549,11 @@ public class EnemyController : MonoBehaviour, IDamagable
         {
             Gizmos.color = Color.magenta;
             Gizmos.DrawLine(transform.position, chasedPlayer.position);
+
+            Gizmos.color = Color.red;
+            Vector2 eyePos = Application.isPlaying ? (Vector2)transform.position + settings.eyeOffset : (Vector2)transform.position + settings.eyeOffset;
+            float frontDir = isFacingRight ? 1f : -1f;
+            Gizmos.DrawLine(eyePos, eyePos + new Vector2(frontDir, 0f) * settings.wallCheckRayDistance);
         }
         else
         {
@@ -533,6 +563,8 @@ public class EnemyController : MonoBehaviour, IDamagable
             Gizmos.DrawLine(eyePos, eyePos + new Vector2(frontDir, 0f) * settings.frontRayDistance);
             Gizmos.color = Color.blue;
             Gizmos.DrawLine(eyePos, eyePos + new Vector2(-frontDir, 0f) * settings.backRayDistance);
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(eyePos, eyePos + new Vector2(frontDir, 0f) * settings.wallCheckRayDistance);
         }
     }
 

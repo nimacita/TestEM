@@ -17,8 +17,8 @@ TagManager:
   - Enemy
   - Player
   - DiedPlayer
-  - 
-  - 
+  - InteractItems
+  - TouchedItems
   - 
   - 
   - 
@@ -49,7 +49,11 @@ TagManager:
   - name: PlayerSort
     uniqueID: 2903711609
     locked: 0
+  - name: DecorSortDeep
+    uniqueID: 1833737987
+    locked: 0
   m_RenderingLayers:
   - Default
   - EnemySort
   - PlayerSort
+  - DecorSortDeep

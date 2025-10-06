@@ -83,6 +83,16 @@ public class PlayerSettings : ScriptableObject
     [Tooltip("Слои считающийся полом или землей")]
     public LayerMask groundLayer;
 
+    //[Header("Detect/Interact Settings")]
+    [Tooltip("Радиус Обнаржение")]
+    public float detectRadius;
+    [Tooltip("Смещение Обнаржения")]
+    public Vector2 detectOffset = Vector2.zero;
+    [Tooltip("Слой для предметов взаимодействия")]
+    public LayerMask interactItemsLayer;
+    [Tooltip("Слой для предметов касания")]
+    public LayerMask touchItemsLayer;
+
     [Header("Main Layer Settings")]
     public LayerMask playerLayer;
     public LayerMask diedLayer;

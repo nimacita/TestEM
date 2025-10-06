@@ -119,7 +119,7 @@ Transform:
   m_GameObject: {fileID: 1880869302948992204}
   serializedVersion: 2
   m_LocalRotation: {x: 0.50000006, y: -0.5, z: -0.4999999, w: 0.5}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: 2, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5149,6 +5149,7 @@ MonoBehaviour:
   splashAttackEffect: {fileID: 2934421794625744113}
   flash: {fileID: 1877242284717272909}
   attackPoint: {fileID: 8049220149234669848}
+  isFacingRight: 1
 --- !u!114 &1877242284717272909
 MonoBehaviour:
   m_ObjectHideFlags: 0

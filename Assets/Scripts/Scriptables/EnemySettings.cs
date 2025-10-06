@@ -4,6 +4,10 @@ using UnityEngine;
 public class EnemySettings : ScriptableObject
 {
 
+    [Header("Name Settings")]
+    [Tooltip("Имя врага")]
+    public string enemyName;
+
     [Header("Health Settings")]
     [Tooltip("Стартовое здоровье")]
     public float maxHealth = 20f;
@@ -59,5 +63,15 @@ public class EnemySettings : ScriptableObject
     [Tooltip("Расстояние отскока")]
     public float knockbackDistance = 2f; 
     [Tooltip("Длительность отскока")]
-    public float takeDamageDuration = 0.5f; 
+    public float takeDamageDuration = 0.5f;
+
+    [Header("Wall Check Settings")]
+    [Tooltip("Длина луча для проверки стены")]
+    public float wallCheckRayDistance = 0.5f;
+    public LayerMask wallLayer;
+
+    [Header("Ground Check Settings")]
+    [Tooltip("Радитус области проверки земли")]
+    public float groundCheckRadius = 0.15f;
+    public LayerMask groundLayer;
 }

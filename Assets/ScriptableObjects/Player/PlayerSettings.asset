@@ -50,6 +50,14 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  detectRadius: 1.1
+  detectOffset: {x: 0, y: 0.9}
+  interactItemsLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  touchItemsLayer:
+    serializedVersion: 2
+    m_Bits: 2048
   playerLayer:
     serializedVersion: 2
     m_Bits: 256

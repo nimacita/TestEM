@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isDamaged = false;
     private bool isDied = false;
     private bool isCanWallJump = false;
+    private bool isInited = false;
 
     [Header("Stats")]
     private int wallDir;
@@ -55,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
         anim = playerAnimation;
 
         Subscribes();
+        isInited = true;
     }
 
     #region Subscribes
@@ -73,6 +75,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (!isInited) return;
         HandleTimers();
         HandleDodgeTimers();
         HandleDamagedTimers();
@@ -83,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!isInited) return;
         CheckGround();
         CheckWall();
         HandleMovement();
@@ -257,7 +261,8 @@ public class PlayerMovement : MonoBehaviour
     private void HandleDodge()
     {
         if (!canDodge || isDodged || 
-            isAttacking || isDamaged || isDied) return;
+            isAttacking || isDamaged || isDied
+            || !isInited) return;
 
         isDodged = true;
         canDodge = false;
@@ -442,6 +447,18 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = lv;
     }
 
+    public void OnGameEnded()
+    {
+        if (!isInited) return;
+
+        isInited = false;
+
+        // сброс горизонтальной скорости
+        Vector2 lv = rb.linearVelocity;
+        lv.x = 0f;
+        rb.linearVelocity = lv;
+    }
+
     #endregion
 
     #region Animation Controlls
@@ -457,7 +474,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isDodged || isAttacking || isDied) return;
 
-        if (!isJumping && isGrounded && input.HorizontalInput != 0f)
+        if (!isJumping && isGrounded && input.HorizontalInput != 0f && isInited)
         {
             //если нынешняя скорость больше чем половина от заданной - бежим
             bool isWalking = Mathf.Abs(rb.linearVelocity.x) <= settings.moveSpeed / 3f;

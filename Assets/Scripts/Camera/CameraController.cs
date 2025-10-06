@@ -1,6 +1,7 @@
  using UnityEngine;
+using Utilities.EventManager;
 
-public class CameraController : MonoBehaviour
+public class CameraController : MonoBehaviour, IInitializable
 {
     [Header("Target Settings")]
     [SerializeField] private Transform playerTransform;
@@ -16,16 +17,34 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Vector2 maxBounds = new Vector2(10f, 10f);
 
     private bool isFollowing = true;
+    private bool isInit = false;
+    private bool isPlayerDied = false;
     private Camera cam;
     private Vector3 velocity = Vector2.zero;
 
-    private void Start()
+    #region Subscribes
+
+    private void OnEnable()
+    {
+        EventManager.Subscribe(eEventType.onPlayerDied, OnPlayerDied);
+    }
+
+    private void OnDisable()
+    {
+        EventManager.Unsubscribe(eEventType.onPlayerDied, OnPlayerDied);
+    }
+
+    #endregion
+
+    public void Initialized()
     {
         cam = GetComponent<Camera>();
+        isInit = true;
     }
 
     private void LateUpdate()
     {
+        if (!isInit || isPlayerDied) return;
         if (isFollowing && playerTransform != null)
         {
             FollowPlayer();
@@ -63,40 +82,9 @@ public class CameraController : MonoBehaviour
         return new Vector3(clampedX, clampedY, targetPosition.z);
     }
 
-    public void EnableFollowing()
+    public void OnPlayerDied(object arg0)
     {
-        isFollowing = true;
-    }
-
-    public void DisableFollowing()
-    {
-        isFollowing = false;
-    }
-
-    public void ToggleFollowing()
-    {
-        isFollowing = !isFollowing;
-    }
-
-    public void SetCameraBounds(Vector2 newMinBounds, Vector2 newMaxBounds)
-    {
-        minBounds = newMinBounds;
-        maxBounds = newMaxBounds;
-    }
-
-    public void SetUseBounds(bool useBounds)
-    {
-        useCameraBounds = useBounds;
-    }
-
-    public void SetSmoothSpeed(float speed)
-    {
-        smoothSpeed = Mathf.Max(0.1f, speed);
-    }
-
-    public void SetOffset(Vector3 newOffset)
-    {
-        offset = newOffset;
+        isPlayerDied = true;
     }
 
     // Методы для отладки в редакторе

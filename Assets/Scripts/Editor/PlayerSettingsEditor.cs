@@ -14,6 +14,7 @@ public class PlayerSettingsEditor : Editor
     private SerializedProperty damageDuration, damagedKnockForce;
     private SerializedProperty groundCheckRadius, groundLayer;
     private SerializedProperty playerLayer, diedLayer;
+    private SerializedProperty detectRadius, detectOffset, interactItemsLayer, touchItemsLayer;
 
     // Флаги для разворачивания секций
     private bool showHealth = true;
@@ -24,6 +25,7 @@ public class PlayerSettingsEditor : Editor
     private bool showDodge = false;
     private bool showDamaged = false;
     private bool showGroundCheck = false;
+    private bool showDetected = false;
     private bool showLayers = false;
 
     private void OnEnable()
@@ -70,6 +72,11 @@ public class PlayerSettingsEditor : Editor
 
         playerLayer = serializedObject.FindProperty("playerLayer");
         diedLayer = serializedObject.FindProperty("diedLayer");
+
+        detectRadius = serializedObject.FindProperty("detectRadius");
+        detectOffset = serializedObject.FindProperty("detectOffset");
+        interactItemsLayer = serializedObject.FindProperty("interactItemsLayer");
+        touchItemsLayer = serializedObject.FindProperty("touchItemsLayer");
     }
 
     public override void OnInspectorGUI()
@@ -138,6 +145,14 @@ public class PlayerSettingsEditor : Editor
         {
             EditorGUILayout.PropertyField(groundCheckRadius);
             EditorGUILayout.PropertyField(groundLayer);
+        });
+
+        DrawFoldout(ref showDetected, "Detect/Interact Settings", () =>
+        {
+            EditorGUILayout.PropertyField(detectRadius);
+            EditorGUILayout.PropertyField(detectOffset);
+            EditorGUILayout.PropertyField(interactItemsLayer);
+            EditorGUILayout.PropertyField(touchItemsLayer);
         });
 
         DrawFoldout(ref showLayers, "Main Layer Settings", () =>

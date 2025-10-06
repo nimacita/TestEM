@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 740118ce51cdb1142923df6d53be36ee, type: 3}
   m_Name: ZombieEnemy
   m_EditorClassIdentifier: 
+  enemyName: "\u0417\u043E\u043C\u0431\u0438"
+  maxHealth: 20
   moveSpeed: 2
   pointReachThreshold: 0.1
   movementMode: 0
@@ -32,7 +34,10 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 256
-  maxHealth: 20
   isDamageKnocked: 1
   knockbackDistance: 1.2
   takeDamageDuration: 0.3
+  wallCheckRayDistance: 0.5
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
