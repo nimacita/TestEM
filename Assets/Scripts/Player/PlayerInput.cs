@@ -4,11 +4,7 @@ using System;
 public class PlayerInput : MonoBehaviour
 {
     [Header("Input Settings")]
-    private KeyCode leftKey = KeyCode.A;
-    private KeyCode rightKey = KeyCode.D;
-    private KeyCode dodgeKey = KeyCode.LeftShift;
-    private KeyCode jumpKey = KeyCode.Space;
-    private KeyCode interactKey = KeyCode.E;
+    [SerializeField] private ManualSettings settings;
 
     public float HorizontalInput { get; private set; }
     public float DodgeInput { get; private set; }
@@ -31,10 +27,10 @@ public class PlayerInput : MonoBehaviour
     {
         HorizontalInput = 0f;
 
-        if (Input.GetKey(leftKey))
+        if (Input.GetKey(settings.leftKey))
             HorizontalInput = -1f;
 
-        if (Input.GetKey(rightKey))
+        if (Input.GetKey(settings.rightKey))
             HorizontalInput = 1f;
 
         HandleDodgeInput();
@@ -44,7 +40,7 @@ public class PlayerInput : MonoBehaviour
     private void HandleDodgeInput()
     {
         DodgeInput = 0f;
-        if (Input.GetKeyDown(dodgeKey))
+        if (Input.GetKeyDown(settings.dodgeKey))
         {
             OnDodgePressed?.Invoke();
         }
@@ -53,9 +49,9 @@ public class PlayerInput : MonoBehaviour
     //инпут дл€ прыжков
     private void HandleJumpInput()
     {
-        JumpPressed = Input.GetKeyDown(jumpKey);
-        JumpReleased = Input.GetKeyUp(jumpKey);
-        JumpHeld = Input.GetKey(jumpKey);
+        JumpPressed = Input.GetKeyDown(settings.jumpKey);
+        JumpReleased = Input.GetKeyUp(settings.jumpKey);
+        JumpHeld = Input.GetKey(settings.jumpKey);
     }
 
     //инпут дл€ атаки
@@ -67,6 +63,6 @@ public class PlayerInput : MonoBehaviour
     //инпут дл€ взаимодейств€и
     private void HandleInteractInput()
     {
-        InteractInput = Input.GetKeyDown(interactKey);
+        InteractInput = Input.GetKeyDown(settings.interactKey);
     }
 }
