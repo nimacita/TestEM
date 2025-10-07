@@ -97909,7 +97909,6 @@ MonoBehaviour:
   - soundName: ZombieAttack
     audioSource: {fileID: 578739084}
     clips:
-    - {fileID: 8300000, guid: 723c82678dc42bf4b9b7d0e765690b1b, type: 3}
     - {fileID: 8300000, guid: 53f8aff6b3e633f449ae77a6c1f35928, type: 3}
     - {fileID: 8300000, guid: 714be621891467944a1e3cbe5ed2f347, type: 3}
     - {fileID: 8300000, guid: f5432f96e37bfb945950a274ae4be365, type: 3}
