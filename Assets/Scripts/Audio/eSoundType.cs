@@ -9,4 +9,6 @@ public enum eSoundType
     footSteps,
     chestOpen,
     dash,
+    zombieAttack,
+    knightAttack,
 }

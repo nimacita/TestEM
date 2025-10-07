@@ -353,6 +353,9 @@ public class EnemyController : MonoBehaviour, IDamagable, IInitializable
         //Еффекст
         if (splashAttackEffect) splashAttackEffect.Play();
 
+        //звук
+        EventManager.InvokeEvent(eEventType.onPlaySound, settings.attackSoundType);
+
         // Наносим урон
         Collider2D[] hits;
         if (isFacingRight)

@@ -14,6 +14,20 @@ AudioMixerEffectController:
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0
+--- !u!244 &-8185826622311728601
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: a94814c7fca1c3442b69194e5f1f925e
+  m_EffectName: Attenuation
+  m_MixLevel: 2cf9f9922d2e7954db2c8b007773fcd0
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!243 &-6699029910019201112
 AudioMixerGroupController:
   m_ObjectHideFlags: 0
@@ -62,6 +76,39 @@ AudioMixerEffectController:
   m_EffectID: ef97a4592ac63724bae1336853efdb48
   m_EffectName: Attenuation
   m_MixLevel: 31b2d1c2bc442a04799a8c0d0e2ac247
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!243 &-4328799661772044924
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: KnightAttack
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: eb5c732cd449b0f4dad120518261f3fe
+  m_Children: []
+  m_Volume: 6a669a2c6a32a5b45b4fe2f66bc375d4
+  m_Pitch: 69f2d16c03caeec47b9d7550e0ee4cfa
+  m_Send: 00000000000000000000000000000000
+  m_Effects:
+  - {fileID: -3771696007230939472}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
+--- !u!244 &-3771696007230939472
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 5f3b612989bd58647859ba4dd181ef85
+  m_EffectName: Attenuation
+  m_MixLevel: 17f24342502fd0b42b6dcb539ff43e30
   m_Parameters: []
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
@@ -145,6 +192,8 @@ AudioMixerController:
     - 9a306838d283c1b458e55937c79a1303
     - e12c7e2e29412d8468228934b035151d
     - 4c3dfc30bbf07a343822e01a61c05dfb
+    - 23fae071e0555f0408439de929e36cdc
+    - eb5c732cd449b0f4dad120518261f3fe
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -166,6 +215,8 @@ AudioMixerGroupController:
   - {fileID: -6699029910019201112}
   - {fileID: -6021467508773467991}
   - {fileID: -740326931446001827}
+  - {fileID: 1694356817557930055}
+  - {fileID: -4328799661772044924}
   m_Volume: e8362e1a54fe95843ab2cd19f95b9d5d
   m_Pitch: 475ddd3dad23a434c9ed89db9d5389ae
   m_Send: 00000000000000000000000000000000
@@ -243,6 +294,25 @@ AudioMixerGroupController:
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: -8513323478150336060}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
+--- !u!243 &1694356817557930055
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ZombieAttack
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: 23fae071e0555f0408439de929e36cdc
+  m_Children: []
+  m_Volume: f80f3cc2c2961194c8e51ce12acb6a82
+  m_Pitch: d0125b0af8884674bbbc1d5ceacdab51
+  m_Send: 00000000000000000000000000000000
+  m_Effects:
+  - {fileID: -8185826622311728601}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0

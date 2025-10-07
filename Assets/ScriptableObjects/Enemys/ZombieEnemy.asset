@@ -34,6 +34,7 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 256
+  attackSoundType: 7
   isDamageKnocked: 1
   knockbackDistance: 1.2
   takeDamageDuration: 0.3

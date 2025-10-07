@@ -55,6 +55,8 @@ public class EnemySettings : ScriptableObject
     public Vector2 attackRangeOffset = Vector2.zero; 
     [Tooltip("Слой игрока")]
     public LayerMask playerLayer;
+    [Tooltip("Тип звука атаки")]
+    public eSoundType attackSoundType;
 
     [Header("Damage Reaction Settings")]
     [Tooltip("Откидывается ли враг " +
