@@ -1,4 +1,5 @@
 using UnityEngine;
+using Utilities.EventManager;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -269,6 +270,8 @@ public class PlayerMovement : MonoBehaviour
         dodgeTimer = settings.dodgeDuration;
         dodgeCooldownTimer = settings.dodgeCooldown;
         float dodgeDir = isFacingRight ? 1f : -1f;
+
+        EventManager.InvokeEvent(eEventType.onPlaySound, eSoundType.dash);
 
         // сброс горизонтальной скорости
         Vector2 lv = rb.linearVelocity;

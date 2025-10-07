@@ -37,7 +37,12 @@ MonoBehaviour:
   isDamageKnocked: 1
   knockbackDistance: 1.2
   takeDamageDuration: 0.3
+  damagedSoundType: 2
   wallCheckRayDistance: 0.5
   wallLayer:
     serializedVersion: 2
     m_Bits: 0
+  groundCheckRadius: 0.15
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8

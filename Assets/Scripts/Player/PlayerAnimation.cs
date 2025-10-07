@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Utilities.EventManager;
 
 public class PlayerAnimation : MonoBehaviour
 {
@@ -140,6 +141,15 @@ public class PlayerAnimation : MonoBehaviour
     public float GetAttackDuration()
     {
         return attackAnim.length;
+    }
+
+    #endregion
+
+    #region Step Action
+
+    public void OnFootAction()
+    {
+        EventManager.InvokeEvent(eEventType.onPlaySound, eSoundType.footSteps);
     }
 
     #endregion

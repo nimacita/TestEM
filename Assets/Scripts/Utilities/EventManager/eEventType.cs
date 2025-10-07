@@ -17,4 +17,7 @@ public enum eEventType
     onDoorOpened,
     onPlayerDied,
     onPlayerFault,
+
+    //Audio
+    onPlaySound,
 }

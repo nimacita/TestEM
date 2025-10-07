@@ -12,6 +12,7 @@ public class ChestController : MonoBehaviour, IInteractable
     {
         if(isOpened) return;
 
+        EventManager.InvokeEvent(eEventType.onPlaySound, eSoundType.chestOpen);
         isOpened = true;
         OpenChestAnim();
         chestCollider.enabled = false;

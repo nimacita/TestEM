@@ -1,4 +1,5 @@
 using UnityEngine;
+using Utilities.EventManager;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -81,6 +82,8 @@ public class PlayerAttack : MonoBehaviour
     private void StartAttack()
     {
         isAttacking = true;
+
+        EventManager.InvokeEvent(eEventType.onPlaySound, eSoundType.swordSwish);
 
         //запускаем кулдаун от момента удара
         lastAttackTime = Time.time;

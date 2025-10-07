@@ -58,6 +58,8 @@ public class PlayerController : MonoBehaviour, IDamagable, IInitializable
 
         flash.Flash();
 
+        EventManager.InvokeEvent(eEventType.onPlaySound, eSoundType.damaged);
+
         //запускаем отмену атаки если идет
         attack.OnTakedDamage();
         //запускаем откидываение при атаке

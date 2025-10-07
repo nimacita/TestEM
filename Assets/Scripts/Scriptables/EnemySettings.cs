@@ -64,6 +64,8 @@ public class EnemySettings : ScriptableObject
     public float knockbackDistance = 2f; 
     [Tooltip("Длительность отскока")]
     public float takeDamageDuration = 0.5f;
+    [Tooltip("Тип звука атаки")]
+    public eSoundType damagedSoundType;
 
     [Header("Wall Check Settings")]
     [Tooltip("Длина луча для проверки стены")]

@@ -399,6 +399,10 @@ public class EnemyController : MonoBehaviour, IDamagable, IInitializable
     {
         if (!isAlive) return;
         flash.Flash();
+
+        //звук
+        EventManager.InvokeEvent(eEventType.onPlaySound, settings.damagedSoundType);
+
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
@@ -516,6 +520,7 @@ public class EnemyController : MonoBehaviour, IDamagable, IInitializable
 
     protected virtual void StartDieAnim()
     {
+        StopAttack();
         anim?.SetDieTrigger();
     }
 
